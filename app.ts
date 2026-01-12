@@ -1,132 +1,194 @@
-// import { Component, signal } from '@angular/core';
-// import { RouterOutlet } from '@angular/router';
-
-// @Component({
-//   selector: 'app-root',
-//   standalone: true,
-//   imports: [RouterOutlet],
-//   templateUrl: './app.html',
-//   styleUrl: './app.css'
-// })
-// export class App {
-//   protected readonly title = signal('Latest_Version');
-// }
-
-
-import { CommonModule, NgFor } from '@angular/common';
+import { CommonModule, CurrencyPipe, DatePipe, LowerCasePipe, NgFor, PercentPipe, UpperCasePipe } from '@angular/common';
 import { Component, OnInit, signal, computed, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, FormControlName, Validators, FormsModule, NgForm, RequiredValidator, FormControl, NgModel, ReactiveFormsModule } from '@angular/forms'
+import { AbstractControl, FormGroup, FormBuilder, FormArray, FormControlName, Validators, FormsModule, NgForm, RequiredValidator, FormControl, NgModel, ReactiveFormsModule, Form } from '@angular/forms'
 import { JsonPipe } from '@angular/common';
+import { ReversePipe } from './reverse-pipe';
 
+//57 - 58
 @Component ({
-  selector:'app-root',
+  selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl:'./app.html',
-  styles:['div {background-color: #f2f2f2; padding: 15px; margin: 5px}','p{margin: 0px;}']
+  imports: [ReversePipe],
+  template: `
+  <p>My name is {{name | reverse}}</p>
+  <p>My name is {{name | reverse:5}}</p>`,
+  styles: [],
 })
-export class App implements OnInit {
-  public _parentForm!: FormGroup;
-  public _name!:FormGroup;
-  public _addr!: FormGroup;
-  public _items!: FormArray;
-
-  constructor(private _fb: FormBuilder) {}
-
-  ngOnInit(){
-    this._name = this._fb.group({
-      fname:['',[Validators.required]],
-      lname:['',[Validators.required]]
-    });
-    
-    this._addr = this._fb.group({
-      addr1:['',[Validators.required]],
-      addr2:[''],
-      city:['',[Validators.required]],
-      state:['',[Validators.required]],
-      zip:['',[Validators.required, Validators.pattern(/^\d{5}$/)]]
-    });
-
-    this._items = this._fb.array ([this.createItemFormGroup()]);
-
-    this._parentForm = this._fb.group({
-      name: this._name,
-      addr: this._addr,
-      items: this._items
-    });
-  }
-
-  createItemFormGroup() {
-    return this._fb.group({
-      name:['', Validators.required],
-      qty:['1', Validators.required],
-      price:['', Validators.required]
-    }); 
-  }
-
-  addItem(){this._items.push(this.createItemFormGroup());}
-
-  deleteItem(index: number) { this._items.removeAt(index); }
-
-  onSubmit(form: FormGroup){alert('Submiited');}
+export class App{
+  name: string = 'Mirchael Caine';
 }
 
-// // @Component ({
-// //   selector:'app-root',
-// //   standalone: true,
-// //   imports: [ReactiveFormsModule],
-// //   template: `
-// //   <form #form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup)" novalidate>
-// //     <label>Name:<input formControlName="name"> </label>
-// //     <br/>
-// //     <label>Location:<input formControlName="location"> </label>
-// //     <br/>
-// //     <input type="submit" value="Submit" [disabled]="!formGroup.valid">
-// //   </form>`,
-// //   styles: []
-// // })
-// // export class AppComponent implements OnInit {
-// //   formGroup!: FormGroup;
-// //   ngOnInit(){
-// //     this.formGroup = new FormGroup({
-// //       name: new FormControl('', Validators.required),
-// //       location: new FormControl('', Validators.required)
-// //     });
-// //   }
-// //   onSubmit(form:FormGroup) {
-// //     alert('submit');
-// //   }
-// // }
+// 56
+// @Component ({
+//   selector: 'app-root',
+//   standalone: true,
+//   imports: [LowerCasePipe, UpperCasePipe, CurrencyPipe, DatePipe, PercentPipe, ],
+//   template: `
+//   <p>Lowercase: {{"The Quick Brown For Jumped Over The Lazy Dogs" | lowercase}}</p>
+//   <p>Uppercase: {{"The Quick Brown For Jumped Over The Lazy Dogs" | uppercase}}</p>
+//   <p>Currency: {{2012.55 | currency}}</p>
+//   <p>UK Pound Currenct: {{2012.55 | currency:'GBP'}}</p>
+//   <p>Percentage: {{05 | percent}}</p>
+//   <p>Date: {{dt | date}}</p>
+//   <p>Short Date: {{dt | date:'shortDate'}}</p>
+//   <p>Special Date Format: {{dt | date:'yMMMMEEEEd'}}</p>`,
+//   styles: [],
+// })
+// export class App{
+//   dt = new Date();
+// }
 
-// // @Component ({
-// //   selector: 'app-root',
-// //   standalone: true,
-// //   imports: [FormsModule, CommonModule],
-// //   template: `
-// //   <form #f="ngForm" novalidate>
-// //     <p>
-// //       <label>First Name</label>
-// //       <input name="fname" ngModel #fname="ngModel" required />
-// //       <span class="error" *ngIf="fname.touched && fname.hasError('required')">Required</span>
-// //     </p>
-// //     <p>
-// //       <label>Last Name</label>
-// //       <input name="lname" ngModel #lname="ngModel" required />
-// //       <span class="error" *ngIf="lname.touched && lname.hasError('required')">Required</span>
-// //     </p>
-// //     <p>
-// //       <label>Email</label><input name="email" ngModel #email="ngModel" required email/>
-// //       <span class="error" *ngIf="email.value && email.touched && email.hasError('email')">Invalid email </span>
-// //     </p>
-// //     <button (click)="onSubmit()" [disabled]="!f.valid"> Submit</button>
-// //   </form>`,
-// // styles: []
-// // })
-// // export class AppComponent{
-// //   onSubmit() {
-// //     alert('Submitted');
-// //   }
-// // }
+// 52 - 53
+// export function validateNotMercedes (control:AbstractControl) {
+//   return (control.value.toLowerCase()!='mercedes')?null: {
+//     validateNotMercedes: {
+//       valid: false
+//     }
+//   }
+// }
+// @Component ({
+//   selector:'app-root',
+//   standalone:true,
+//   imports: [ReactiveFormsModule],
+//   template: `
+//   <form #form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup)" novalidate>
+//     <label>Make: <input formControlName="make"></label>
+//     <br/>
+//     <label>Model: <input formControlName="model"></label>
+//     <br/>
+//     <input type="submit" value="Submit" [disabled]="!formGroup.valid">
+//   </form>`,
+//   styles: [],
+// })
+// export class App implements OnInit {
+//   formGroup!: FormGroup;
+
+//   ngOnInit() {
+//     this.formGroup = new FormGroup ({
+//       make: new FormControl('', [Validators.required, validateNotMercedes]),
+//       model: new FormControl('', Validators.required)
+//     });
+//   }
+
+//   onSubmit(form:FormGroup) {
+//     alert('submit');
+//   }
+// }
+
+// 47 - 50
+// @Component ({
+//   selector:'app-root',
+//   standalone: true,
+//   imports: [CommonModule, ReactiveFormsModule],
+//   templateUrl:'./app.html',
+//   styles:['div {background-color: #f2f2f2; padding: 15px; margin: 5px}','p{margin: 0px;}']
+// })
+// export class App implements OnInit {
+//   public _parentForm!: FormGroup;
+//   public _name!:FormGroup;
+//   public _addr!: FormGroup;
+//   public _items!: FormArray;
+
+//   constructor(private _fb: FormBuilder) {}
+
+//   ngOnInit(){
+//     this._name = this._fb.group({
+//       fname:['',[Validators.required]],
+//       lname:['',[Validators.required]]
+//     });
+    
+//     this._addr = this._fb.group({
+//       addr1:['',[Validators.required]],
+//       addr2:[''],
+//       city:['',[Validators.required]],
+//       state:['',[Validators.required]],
+//       zip:['',[Validators.required, Validators.pattern(/^\d{5}$/)]]
+//     });
+
+//     this._items = this._fb.array ([this.createItemFormGroup()]);
+
+//     this._parentForm = this._fb.group({
+//       name: this._name,
+//       addr: this._addr,
+//       items: this._items
+//     });
+//   }
+
+//   createItemFormGroup() {
+//     return this._fb.group({
+//       name:['', Validators.required],
+//       qty:['1', Validators.required],
+//       price:['', Validators.required]
+//     }); 
+//   }
+
+//   addItem(){this._items.push(this.createItemFormGroup());}
+
+//   deleteItem(index: number) { this._items.removeAt(index); }
+
+//   onSubmit(form: FormGroup){alert('Submiited');}
+// }
+
+// 44 - 45
+// @Component ({
+//   selector:'app-root',
+//   standalone: true,
+//   imports: [ReactiveFormsModule],
+//   template: `
+//   <form #form [formGroup]="formGroup" (ngSubmit)="onSubmit(formGroup)" novalidate>
+//     <label>Name:<input formControlName="name"> </label>
+//     <br/>
+//     <label>Location:<input formControlName="location"> </label>
+//     <br/>
+//     <input type="submit" value="Submit" [disabled]="!formGroup.valid">
+//   </form>`,
+//   styles: []
+// })
+// export class App implements OnInit {
+//   formGroup!: FormGroup;
+
+//   ngOnInit(){
+//     this.formGroup = new FormGroup({
+//       name: new FormControl('', Validators.required),
+//       location: new FormControl('', Validators.required)
+//     });
+//   }
+
+//   onSubmit(form:FormGroup) {
+//     alert('submit');
+//   }
+// }
+
+// 42 - 43
+// @Component ({
+//   selector: 'app-root',
+//   standalone: true,
+//   imports: [FormsModule, CommonModule],
+//   template: `
+//     <form #f="ngForm" novalidate>
+//       <p>
+//         <label>First Name</label>
+//         <input name="fname" ngModel #fname="ngModel" required />
+//         @if (fname.touched && fname.hasError('required')) {<span class="error"> Required</span>}
+//       </p>
+//       <p>
+//         <label>Last Name</label>
+//         <input name="lname" ngModel #lname="ngModel" required />
+//         @if (lname.touched && lname.hasError('required')) {<span class="error"> Required</span>}
+//       </p>
+//       <p>
+//         <label>Email</label><input name="email" ngModel #email="ngModel" required email/>
+//         @if (email.value && email.touched && email.hasError('email')) {<span class="error"> Invalid email</span>}
+//       </p>
+//       <button (click)="onSubmit()" [disabled]="!f.valid">Submit</button>
+//     </form>`,
+//   styles: [],
+// })
+// export class App{
+//   onSubmit() {
+//     alert('Submitted');
+//   }
+// }
 
 // // ================================================================================================================================================================
 
