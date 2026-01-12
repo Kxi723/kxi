@@ -1,0 +1,72 @@
+<form [formGroup]="_parentForm" novalidate (ngSubmit)="onSubmit(_parentForm)">
+    <div formGroupName="name">
+        <b>Name</b>
+        <br/>
+        <label>First Name
+            <input type="text" formControlName="fname">
+            @if (_name.get('fname')?.touched && !_name.get('fname')?.valid) {<small> Required.</small>}
+        </label>
+        <br/>
+        <label>Last Name
+            <input type="text" formControlName="lname">
+            @if (_name.get('lname')?.touched && !_name.get('lname')?.valid) {<small> Required.</small>}
+        </label>
+    </div>
+    <br/>
+    <div formGroupName="addr">
+        <b>Address</b>
+        <br/>
+        <label class="left">Address #1
+            <input type="text" formControlName="addr1">
+            @if (_addr.get('addr1')?.touched && !_addr.get('addr1')?.valid) {<small> Required.</small>}
+        </label>
+        <br/>
+        <label>Address #2
+            <input type="text" formControlName="addr2">
+            @if (_addr.get('addr2')?.touched && !_addr.get('addr2')?.valid) {<small> Required.</small>}
+        </label>
+        <br/>
+        <label>City
+            <input type="text" formControlName="city">
+            @if (_addr.get('city')?.touched && !_addr.get('city')?.valid) {<small> Required.</small>}
+        </label>
+        <br/>
+        <label>State
+            <select formControlName="state">
+                <option>AL</option>
+                <option>GA</option>
+                <option>FL</option>
+            </select>
+            @if (_addr.get('state')?.touched && !_addr.get('state')?.valid) {<small> Required.</small>}
+        </label>
+        <br/>
+        <label>Zip 
+            <input type="text" formControlName="zip" maxlength="5">
+            @if (_addr.get('zip')?.touched && !_addr.get('zip')?.valid) {<small>Must be exactly 5 digits</small>}
+        </label>
+    </div>
+    <br/>
+    <div formArrayName="items">
+        <b>Items</b>
+        <br/>
+        @for (item of _items.controls; track ($index)) {
+            <p [formGroupName]="$index">
+                <label>Name: <input type="text" formControlName="name" size="30">
+                    @if (item.get('name')?.touched&&!item.get('name')?.valid) {<small>Required</small>}
+                </label>
+                <label>Qty: <input type="number" formControlName="qty" min="1">
+                    @if (item.get('qty')?.touched&&!item.get('qty')?.valid) {<small>Required</small>}
+                </label>
+                <label>Price: <input type="number" formControlName="price" min="0.01" max="1000" step="0.1">
+                    @if (item.get('price')?.touched&&!item.get('price')?.valid) {<small>Required</small>}
+                </label>
+                <button type="button" (click)="deleteItem($index)">Delete</button>
+            </p>
+        }
+    </div>
+    <br/>
+    <div>
+        <input type="button" value="Add Item" (click)="addItem()"/>
+        <input type="submit" value="Submit" [disabled]="!_parentForm.valid"/>
+    </div>
+</form>
