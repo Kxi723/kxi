@@ -10,11 +10,14 @@ import { Language } from './language';
 @Component ({
   selector:'app-root',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
+  providers: [SwaggerService],
   template: `
   <h1>Countries</h1>
   <ul>
-    <li @for (let language of _languages){{{language.name}} ;({{language.code}})}> </li>
+    @for (language of _languages; track language.code) {
+      <li> {{language.name}} ;({{language.code}}) </li>
+    }
   </ul>`,
   styles: [],
 })
@@ -24,10 +27,10 @@ export class App implements OnInit {
   constructor(private _swaggerService:SwaggerService) {}
 
   ngOnInit() {
-    this._swaggerService.getLanguages().subscribe(
-      res => {this._languages = res;},
-      error => {console.log('an error occurred.');}
-    )
+    this._swaggerService.getLanguages().subscribe({
+      next: (res) => {this._languages = res;},
+      error: (error) => {console.log('an error occurred.');}
+    })
   }
 }
 

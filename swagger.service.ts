@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Language } from "./language";
 
-@Injectable() export class SwaggerService {
+@Injectable({providedIn: 'root'})
+export class SwaggerService {
     constructor(private _http:HttpClient) {}
 
     getLanguages() {
