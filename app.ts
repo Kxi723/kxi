@@ -5,56 +5,94 @@ import { JsonPipe } from '@angular/common';
 import { ReversePipe } from './reverse-pipe';
 import { SwaggerService } from './swagger.service';
 import { Language } from './language';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
-// 67 - 68
+// 70 - 71
 @Component ({
   selector: 'app-root',
   standalone: true,
-  imports: [JsonPipe, FormsModule, CommonModule],
-  template: `
-  <input [(ngModel)]="_search" placeholder="city">
-  <button (click)="doSearchConcatenatedUrl()">Search (Concatenated URL)</button>
-  <button (click)="doSearchHttpParams1()">Search (Htttp Params1)</button>
-  <button (click)="doSearchHttpParams2()">Search (Http Params2)</button>
-  <p>JSON {{_result | json}}</p>`,
+  imports: [],
+  templateUrl: './app.html',
   styles: [],
 })
-export class App {
-  _search = 'Atlanda';
-  _result = {};
-
+export class App implements OnInit {
+  _posts = [];
+  _post = {};
+  @ViewChild('modal')_myModal:any;
   constructor(private _http:HttpClient) {}
+  ngOnInit(){
+    return this._http.get<any>("https://jsonplaceholder.typicode.com/posts").subscribe(res => {this._posts = res;})
+    console.log('done');
+  };
 
-  doSearchConcatenatedUrl() {
-    const concatenatedUrl: string = "https://trailapi-trailapi.p.mashape.com?q[city_cont]=" + encodeURIComponent(this._search);
-    const mashapeKey = 'OxWYjpdztcmsheZU9AWLNQcE9g9wp1qdRkFjsneaEp2Yf68nYH';
-    const httpHeaders: HttpHeaders = new HttpHeaders({'Content-Type':'application/json','X-Mashape-Key':'mashapeKey'});
-    this._http.get(concatenatedUrl,{headers:httpHeaders}).subscribe(
-      res => {this._result = res;}
-    );
-  }
-  doSearchHttpParams1() {
-    const url: string = "https://trailapi-trailapi.p.mashape.com";
-    const mashapeKey = 'OxWYjpdztcmsheZU9AWLNQcE9g9wp1qdRkFjsneaEp2Yf68nYH';
-    const httpHeaders: HttpHeaders = new HttpHeaders({'Content-Type':'application/json','X-Mashape-Key':'mashapeKey'});
-    const params = new HttpParams ({fromString:'q[city_cont]=' + this._search});
-    this._http.get(url,{headers:httpHeaders, params:params}).subscribe(
-      res => {this._result = res;}
-    );
-  }
+  showPost(postId: number) {
+    this._http.get<any>(`https://jsonplaceholder.typicode.com/posts/${postId}`).subscribe(res => {
+      this._post = res; 
+      this._myModal.nativeElement.style.display = 'block';
+    })
+  };
 
-  doSearchHttpParams2() {
-    const url: string = "https://trailapi-trailapi.p.mashape.com";
-    const mashapeKey = 'OxWYjpdztcmsheZU9AWLNQcE9g9wp1qdRkFjsneaEp2Yf68nYH';
-    const httpHeaders: HttpHeaders = new HttpHeaders({'Content-Type':'application/json','X-Mashape-Key':'mashapeKey'});
-    const params = new HttpParams().set('q[city_cont]', this._search);
-    this._http.get(url,{headers:httpHeaders, params:params}).subscribe(
-      res => {this._result = res;}
-    );
-  }
-  
+  closeModal() {
+    this._myModal.nativeElement.style.display = 'none';
+  };
 }
+
+// 67 - 68
+// @Component ({
+//   selector: 'app-root',
+//   standalone: true,
+//   imports: [ReactiveFormsModule],
+//   template: `
+//   <p>Search: <input [formControl]="search" placeholder="Book Title"></p>
+//   <p>Search by:</p>
+//   <p><button (click)="doSearchConcatenatedUrl()">Search (Concatenated URL)</button>
+//   <button (click)="doSearchHttpParams1()">Search (HtttpParams fromString)</button>
+//   <button (click)="doSearchHttpParams2()">Search (HttpParams .set)</button></p>
+//   @if(_loading) {
+//     <p>Loading...</p>
+//   }
+//   @if(_result){
+//     <h3>Found {{_result.numFound}} books. Top 3 results:</h3>
+//     <ul>
+//       @for(book of _result.docs.slice(0,3); track book.author_key) {
+//         <li>{{book.title}} (First pulish: {{book.first_publish_year}})</li>
+//       }
+//     </ul>
+//   }`,
+//   styles: [],
+// })
+// export class App { 
+//   search = new FormControl('Harry Potter')
+//   _result:any = {};
+//   _loading = false;
+
+//   constructor(private _http:HttpClient) {}
+
+//   doSearchConcatenatedUrl() {
+//     this._loading = true; this._result = null;
+//     const concatenatedUrl: string = "https://openlibrary.org/search.json?q=" + encodeURIComponent(this.search.value || '');
+//     this._http.get(concatenatedUrl).subscribe(
+//       res => {this._result = res; this._loading=false}
+//     );
+//   }
+//   doSearchHttpParams1() {
+//     this._loading = true; this._result = null;
+//     const url: string = "https://openlibrary.org/search.json";
+//     const params = new HttpParams ({fromString:'q=' + this.search});
+//     this._http.get(url,{params:params}).subscribe(
+//       res => {this._result = res; this._loading=false}
+//     );
+//   }
+
+//   doSearchHttpParams2() {
+//     this._loading = true; this._result = null;
+//     const url: string = "https://openlibrary.org/search.json";
+//     const params = new HttpParams().set('q', this.search.value || '');
+//     this._http.get(url,{params:params}).subscribe(
+//       res => {this._result = res; this._loading=false}
+//     );
+//   }
+// }
 
 // 65 - 66
 // @Component ({
@@ -107,7 +145,7 @@ export class App {
 // @Component ({
 //   selector: 'app-root',
 //   standalone: true,
-//   imports: [LowerCasePipe, UpperCasePipe, CurrencyPipe, DatePipe, PercentPipe, ],
+//   imports: [LowerCasePipe, UpperCasePipe, CurrencyPipe, DatePipe, PercentPipe],
 //   template: `
 //   <p>Lowercase: {{"The Quick Brown For Jumped Over The Lazy Dogs" | lowercase}}</p>
 //   <p>Uppercase: {{"The Quick Brown For Jumped Over The Lazy Dogs" | uppercase}}</p>
