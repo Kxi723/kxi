@@ -5,35 +5,89 @@ import { JsonPipe } from '@angular/common';
 import { ReversePipe } from './reverse-pipe';
 import { SwaggerService } from './swagger.service';
 import { Language } from './language';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-// 65 - 66
+// 67 - 68
 @Component ({
-  selector:'app-root',
+  selector: 'app-root',
   standalone: true,
-  imports: [CommonModule],
-  providers: [SwaggerService],
+  imports: [JsonPipe, FormsModule, CommonModule],
   template: `
-  <h1>Countries</h1>
-  <ul>
-    @for (language of _languages; track language.code) {
-      <li> {{language.name}} ;({{language.code}}) </li>
-    }
-  </ul>`,
+  <input [(ngModel)]="_search" placeholder="city">
+  <button (click)="doSearchConcatenatedUrl()">Search (Concatenated URL)</button>
+  <button (click)="doSearchHttpParams1()">Search (Htttp Params1)</button>
+  <button (click)="doSearchHttpParams2()">Search (Http Params2)</button>
+  <p>JSON {{_result | json}}</p>`,
   styles: [],
 })
-export class App implements OnInit {
-  _languages = new Array<Language>();
+export class App {
+  _search = 'Atlanda';
+  _result = {};
 
-  constructor(private _swaggerService:SwaggerService) {}
+  constructor(private _http:HttpClient) {}
 
-  ngOnInit() {
-    this._swaggerService.getLanguages().subscribe({
-      next: (res) => {this._languages = res;},
-      error: (error) => {console.log('an error occurred.');}
-    })
+  doSearchConcatenatedUrl() {
+    const concatenatedUrl: string = "https://trailapi-trailapi.p.mashape.com?q[city_cont]=" + encodeURIComponent(this._search);
+    const mashapeKey = 'OxWYjpdztcmsheZU9AWLNQcE9g9wp1qdRkFjsneaEp2Yf68nYH';
+    const httpHeaders: HttpHeaders = new HttpHeaders({'Content-Type':'application/json','X-Mashape-Key':'mashapeKey'});
+    this._http.get(concatenatedUrl,{headers:httpHeaders}).subscribe(
+      res => {this._result = res;}
+    );
   }
+  doSearchHttpParams1() {
+    const url: string = "https://trailapi-trailapi.p.mashape.com";
+    const mashapeKey = 'OxWYjpdztcmsheZU9AWLNQcE9g9wp1qdRkFjsneaEp2Yf68nYH';
+    const httpHeaders: HttpHeaders = new HttpHeaders({'Content-Type':'application/json','X-Mashape-Key':'mashapeKey'});
+    const params = new HttpParams ({fromString:'q[city_cont]=' + this._search});
+    this._http.get(url,{headers:httpHeaders, params:params}).subscribe(
+      res => {this._result = res;}
+    );
+  }
+
+  doSearchHttpParams2() {
+    const url: string = "https://trailapi-trailapi.p.mashape.com";
+    const mashapeKey = 'OxWYjpdztcmsheZU9AWLNQcE9g9wp1qdRkFjsneaEp2Yf68nYH';
+    const httpHeaders: HttpHeaders = new HttpHeaders({'Content-Type':'application/json','X-Mashape-Key':'mashapeKey'});
+    const params = new HttpParams().set('q[city_cont]', this._search);
+    this._http.get(url,{headers:httpHeaders, params:params}).subscribe(
+      res => {this._result = res;}
+    );
+  }
+  
 }
 
+// 65 - 66
+// @Component ({
+//   selector:'app-root',
+//   standalone: true,
+//   imports: [],
+//   template: `
+//   <h1>Countries</h1>
+//   <ul>
+//     @for (language of languages(); track language.code) {
+//       <li> {{language.name}}: ({{language.longCode}}) </li>
+//     }
+//     @if (languages().length == 0) {
+//       <p>Loading or No Data...</p>
+//     }
+//   </ul>`,
+//   styles: [],
+// })
+// export class App implements OnInit {
+//   languages = signal<Array<Language>>([]);
+
+//   constructor(private _swaggerService:SwaggerService) {}
+
+//   ngOnInit() {
+//     this._swaggerService.getLanguages().subscribe({
+//       next: (res) => {
+//         this.languages.set(res);
+//         console.log('Data received: ', res);
+//       },
+//       error: (error) => {console.log('an error occurred.');}
+//     })
+//   }
+// }
 
 //57 - 58
 // @Component ({
