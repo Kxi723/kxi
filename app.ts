@@ -3,20 +3,48 @@ import { Component, OnInit, signal, computed, ViewChild, AfterViewInit, ElementR
 import { AbstractControl, FormGroup, FormBuilder, FormArray, FormControlName, Validators, FormsModule, NgForm, RequiredValidator, FormControl, NgModel, ReactiveFormsModule, Form } from '@angular/forms'
 import { JsonPipe } from '@angular/common';
 import { ReversePipe } from './reverse-pipe';
+import { SwaggerService } from './swagger.service';
+import { Language } from './language';
 
-//57 - 58
+// 65 - 66
 @Component ({
-  selector: 'app-root',
+  selector:'app-root',
   standalone: true,
-  imports: [ReversePipe],
+  imports: [],
   template: `
-  <p>My name is {{name | reverse}}</p>
-  <p>My name is {{name | reverse:5}}</p>`,
+  <h1>Countries</h1>
+  <ul>
+    <li @for (let language of _languages){{{language.name}} ;({{language.code}})}> </li>
+  </ul>`,
   styles: [],
 })
-export class App{
-  name: string = 'Mirchael Caine';
+export class App implements OnInit {
+  _languages = new Array<Language>();
+
+  constructor(private _swaggerService:SwaggerService) {}
+
+  ngOnInit() {
+    this._swaggerService.getLanguages().subscribe(
+      res => {this._languages = res;},
+      error => {console.log('an error occurred.');}
+    )
+  }
 }
+
+
+//57 - 58
+// @Component ({
+//   selector: 'app-root',
+//   standalone: true,
+//   imports: [ReversePipe],
+//   template: `
+//   <pre>My name is {{name | reverse}}</pre>
+//   <pre>My name is {{name | reverse:5}}</pre>`,
+//   styles: [],
+// })
+// export class App{
+//   name: string = 'Mirchael Caine';
+// }
 
 // 56
 // @Component ({
